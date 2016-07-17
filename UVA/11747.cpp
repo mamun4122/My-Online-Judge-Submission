@@ -21,28 +21,25 @@
 #include <ctime>
 using namespace std;
 
-
+#define rep(i,n) for(int i = 1 ; i<=(n) ; i++)
+#define repI(i,n) for(int i = 0 ; i<(n) ; i++)
+#define    FOREACH(i,t)      for (typeof(t.begin()) i=t.begin(); i!=t.end(); i++)
 #define mem(p,v) memset(p, v, sizeof(p))
 #define SET(p) 	  memset(p, -1, sizeof(p))
 #define CLR(p)    memset(p, 0, sizeof(p))
-
-
 #define    getI(a) 	         scanf("%d", &a)
 #define    getII(a,b) 	     scanf("%d%d", &a, &b)
 #define    getIII(a,b,c)     scanf("%d%d%d", &a, &b, &c)
 #define    getL(n)           scanf("%lld",&n)
 #define    getF(n)           scanf("%lf",&n)
-
-#define rep(i,n) for( i = 1 ; i<=(n) ; i++)
-#define repI(i,n) for( i = 0 ; i<(n) ; i++)
-#define    FOREACH(i,t)      for (typeof(t.begin()) i=t.begin(); i!=t.end(); i++)
-
-
-#define ALL(p)  p.begin(),p.end()
-#define ALLR(p) p.rbegin(),p.rend()
 #define READ(f) freopen(f, "r", stdin)
 #define WRITE(f) freopen(f, "w", stdout)
+#define ALL(p)  p.begin(),p.end()
+#define ALLR(p) p.rbegin(),p.rend()
 #define pb(x) push_back(x)
+#define chk(a,k) ((bool)(a&(1<<(k))))
+#define off(a,k) (a&(~(1<<(k))))
+#define on(a,k) (a|(1<<(k)))
 
 #define    vi 	 vector < int >
 #define    vii 	 vector < vector < int > >
@@ -52,16 +49,10 @@ using namespace std;
 #define    ss 	 second
 #define    ll	 long long
 #define    ull 	 unsigned long long
-#define    ui    unsigned int
-#define    ld 	 long double
-
-
 const double EPS = 1e-9;
-const int INF = 0x7f7f7f;
+const int INF = 0x7f7f7f7f;
 const double PI=acos(-1.0);
-
 #define iseq(a,b) (fabs(a-b)<EPS)
-
 template< class T > inline T _abs(T n)
 {
     return ((n) < 0 ? -(n) : (n));
@@ -83,134 +74,95 @@ template< class T > inline T lcm(T a, T b)
     return ((a) / gcd((a), (b)) * (b));
 }
 
-
-
 //******************DELETE****************
-#define mamun
+#define mamu
 #ifdef mamun
-#define debug(args...) {dbg,args; cerr<<endl;}
+#define debug(args...) {cerr<<"* ";dbg,args; cerr<<endl;}
 #else
 #define debug(args...)  // Just strip off all debug tokens
 #endif
 
 struct debugger
 {
-    template<typename T> debugger& operator , (const T& v)
+    template<typename T> debugger& operator, (const T& v)
     {
         cerr<<v<<" ";
         return *this;
     }
 } dbg;
 //******************DELETE****************
-#define MAXN 210
+int t,n,m;
+#define MAXN 100005
 struct edge
 {
     int u,v,w;
     bool operator < ( const edge& p ) const
     {
-        return w > p.w;
+        return w < p.w;
     }
 };
-int pr[MAXN],mark[MAXN];
+int pr[MAXN];
 vector<edge>e;
-vector<int> adj[MAXN],cost[MAXN];
-int dist[MAXN];//,mark[MAXN];
+vector<int> ans;
 int find(int r)
 {
-    return pr[r]=(pr[r]==r) ? r:  find(pr[r]);
+    if(pr[r]==r) return r;
+    return pr[r]=find(pr[r]);
 }
 void mst(int n)
 {
     sort(e.begin(),e.end());
     for(int i=1; i<=n; i++)pr[i]=i;
 
-    int count=0;//,s=0;
+    int count=0,s=0;
     for(int i=0; i<(int)e.size(); i++)
     {
         int u=find(e[i].u);
         int v=find(e[i].v);
         if(u!=v)
         {
-            //debug(e[i].u,e[i].v)
-            adj[e[i].u].push_back(e[i].v);
-            adj[e[i].v].push_back(e[i].u);
-            cost[e[i].u].push_back(e[i].w);
-            cost[e[i].v].push_back(e[i].w);
             pr[u]=v;
             count++;
-            //s+=e[i].w;
-            if(count==n-1) break;
+//            s+=e[i].w;
+//            if(count==n-1) break;
         }
+        else ans.push_back(e[i].w);
     }
-    //return s;
+//    return s;
 }
-map<string,int> mp;
-void bfs(int src,int dest)
-{
-    //debug(src,dest)
-    mark[src]=1;
-    queue<int>q;
-    q.push(src);
-    while(!q.empty())
-    {
-        int u=q.front();q.pop();
-        if(u==dest)return;
-        for(int i=0;i<adj[u].size();i++)
-        {
-            int v=adj[u][i];
-            int c=cost[u][i];
-            //debug(u,v,c)
-            if(!mark[v])
-            {
-                dist[v]=min(c,dist[u]);
-                mark[v]=1;
-                q.push(v);
-            }
-        }
-    }
-}
+
 int main()
 {
-	//READ("in.txt");
-	//WRITE("out.txt");
-    //debug(INF)
-    int n,m,i,flg=0;
-    while(getII(n,m)&&(n||m))
+//    READ("in.txt");
+    //WRITE("out.txt");
+    while(~getII(n,m)&&(n||m))
     {
-        //if(flg)puts("");
-        string x,y;
-        int z;
-        int cnt=1;
-
-        edge get;
         e.clear();
+        ans.clear();
         rep(i,m)
         {
-            cin>>x>>y>>z;
-            if(!mp[x])mp[x]=cnt++;
-            if(!mp[y])mp[y]=cnt++;
-            get.u=mp[x];
-            get.v=mp[y];
-            get.w=z;
+            int u,v,w;
+            getIII(u,v,w);
+            edge get;
+            u++;v++;
+            get.u=u;get.v=v;get.w=w;
             e.push_back(get);
         }
-        rep(i,n){
-            adj[i].clear();
-            cost[i].clear();
-            dist[i]=INF;
+        mst(n);
+        sort(ALL(ans));
+        if(ans.size()==0)puts("forest");
+        else
+        {
+            repI(i,ans.size())
+            {
+                if(i)printf(" ");
+                printf("%d",ans[i]);
+            }
+            puts("");
         }
-        mst(cnt);
-        CLR(mark);
-        cin>>x>>y;
-        //debug(x,y)
-        bfs(mp[x],mp[y]);
-        printf("Scenario #%d\n%d tons\n",++flg,dist[mp[y]]);
-        mp.clear();
-        puts("");
-
-
     }
     return 0;
 
 }
+
 
