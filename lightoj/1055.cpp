@@ -274,7 +274,7 @@ int main()
         }
         sort(ALL(v));
         sort(ALL(dst));
-        sort(ALL(v));
+//        sort(ALL(v));
         dest[dst[0]][dst[1]][dst[2]]=1;
         debug("m",dst[0],dst[1],dst[2]);
         int ans=bfs(v[0],v[1],v[2]);
