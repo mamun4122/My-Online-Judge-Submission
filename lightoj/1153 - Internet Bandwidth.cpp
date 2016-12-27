@@ -65,112 +65,115 @@ const double PI=acos(-1.0);
 #define    ll	 long long
 #define    ull 	 unsigned long long
 
-template< class T > inline T _abs(T n)
-{
-    return ((n) < 0 ? -(n) : (n));
-}
-template< class T > inline T _max(T a, T b)
-{
-    return (!((a)<(b))?(a):(b));
-}
-template< class T > inline T _min(T a, T b)
-{
-    return (((a)<(b))?(a):(b));
-}
-template< class T > inline T _swap(T &a, T &b)
-{
-    a=a^b;
-    b=a^b;
-    a=a^b;
-}
-template< class T > inline T gcd(T a, T b)
-{
-    return (b) == 0 ? (a) : gcd((b), ((a) % (b)));
-}
-template< class T > inline T lcm(T a, T b)
-{
-    return ((a) / gcd((a), (b)) * (b));
-}
-template <typename T> string NumberToString ( T Number )
-{
-    ostringstream ss;
-    ss << Number;
-    return ss.str();
-}
+template< class T > inline T gcd(T a, T b) { return (b) == 0 ? (a) : gcd((b), ((a) % (b))); }
+template< class T > inline T lcm(T a, T b) { return ((a) / gcd((a), (b)) * (b)); }
+template <typename T> string NumberToString ( T Number ) { ostringstream ss; ss << Number; return ss.str(); }
 
 #ifdef mamun
-#define debug(args...) {cerr<<"*: "; dbg,args; cerr<<endl;}
+     #define debug(args...) {cerr<<"*: "; dbg,args; cerr<<endl;}
 #else
-#define debug(args...)  // Just strip off all debug tokens
+    #define debug(args...)  // Just strip off all debug tokens
 #endif
 
-struct debugger
-{
-    template<typename T> debugger& operator, (const T& v)
-    {
+struct debugger{
+    template<typename T> debugger& operator , (const T& v){
         cerr<<v<<" ";
         return *this;
     }
-} dbg;
+}dbg;
 ///****************** template ends here ****************
 int t,n,m;
-#define MAXN 1005
-int dp[MAXN][5];
-int par[MAXN];
-vector<int>edges[MAXN];
-int visit[1005];
-int tot;
-int call(int u, int isGuard)
-{
-//    if(visit[u]==0)tot++;
-    visit[u]=1;
-    if (edges[u].size() == 0)return 1;
-    if (dp[u][isGuard] != -1)return dp[u][isGuard];
-    int sum = 0;
-    for (int i = 0; i < (int)edges[u].size(); i++)
-    {
-        int v = edges[u][i];
-        if (v != par[u])
-        {
-            par[v] = u;
-            if (isGuard == 1)sum += call(v, 0);
-            else sum += max(call(v, 1), call(v, 0));
-        }
-    }
-    return dp[u][isGuard] = sum + isGuard;
+int src, snk, nNode, nEdge;
+#define MAXN 105
+#define MAXE 10005
+int Q[MAXN], fin[MAXN], pro[MAXN], dist[MAXN];
+int flow[MAXE], cap[MAXE], nextt[MAXE], to[MAXE];
+
+inline void init(int _src, int _snk, int _n) {
+    src = _src, snk = _snk, nNode = _n, nEdge = 0;
+    SET(fin);
 }
 
-int main()
-{
-#ifdef mamun
-//    READ("in.txt");
+inline void add(int u, int v, int _cap) {
+    to[nEdge] = v, cap[nEdge] = _cap, flow[nEdge] = 0;
+    nextt[nEdge] = fin[u], fin[u] = nEdge++;
+    to[nEdge] = u, cap[nEdge] = _cap, flow[nEdge] = 0;
+    nextt[nEdge] = fin[v], fin[v] = nEdge++;
+}
+
+bool bfs() {
+    int st, en, i, u, v;
+    SET(dist);
+    dist[src] = st = en = 0;
+    Q[en++] = src;
+    while(st < en) {
+        u = Q[st++];
+        for(i=fin[u]; i>=0; i=nextt[i]) {
+            v = to[i];
+            if(flow[i] < cap[i] && dist[v]==-1) {
+                dist[v] = dist[u]+1;
+                Q[en++] = v;
+            }
+        }
+    }
+    return dist[snk]!=-1;
+}
+
+int dfs(int u, int fl) {
+    if(u==snk) return fl;
+    for(int &e=pro[u], v, df; e>=0; e=nextt[e]) {
+        v = to[e];
+        if(flow[e] < cap[e] && dist[v]==dist[u]+1) {
+            df = dfs(v, min(cap[e]-flow[e], fl));
+            if(df>0) {
+                flow[e] += df;
+                flow[e^1] -= df;
+                return df;
+            }
+        }
+    }
+    return 0;
+}
+
+int dinitz() {
+    ll ret = 0;
+    int df;
+    while(bfs()) {
+        for(int i=1; i<=nNode; i++) pro[i] = fin[i];
+        while(true) {
+            df = dfs(src, INF);
+            if(df) ret += df;
+            else break;
+        }
+    }
+    return ret;
+}
+
+int main() {
+    ///check for 0 or -1 if input not specified
+    #ifdef mamun
+//        READ("in.txt");
 //        WRITE("out.txt");
-#endif // mamun
+    #endif // mamun
+//    ios_base::sync_with_stdio(0);cin.tie(0);
     getI(t);
     rep(cs,t)
     {
-        getII(n,m);
-        rep(i,n)edges[i].clear();
+//        SET(fin);
+        getI(n);
+        int ss,dest;
+        getIII(ss,dest,m);
+        init(ss,dest,n);
         rep(i,m)
         {
-            int u, v;
-            getII(u,v);
-            edges[u].push_back(v);
-            edges[v].push_back(u);
+            int u,v,w;
+            getIII(u,v,w);
+            add(u,v,w);
         }
-        SET(dp);
-        SET(par);
-        CLR(visit);
-        int ans=0;
-        rep(i,n)
-        {
-            if(!visit[i])
-            {
-                ans+= max(call(i, 1), call(i, 0));
-            }
-        }
-        printf("Case %d: %d\n",cs,ans);
+        printf("Case %d: %d\n",cs,dinitz());
     }
+
+
     return 0;
 }
 

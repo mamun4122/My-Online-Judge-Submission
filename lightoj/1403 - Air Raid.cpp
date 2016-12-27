@@ -65,24 +65,6 @@ const double PI=acos(-1.0);
 #define    ll	 long long
 #define    ull 	 unsigned long long
 
-template< class T > inline T _abs(T n)
-{
-    return ((n) < 0 ? -(n) : (n));
-}
-template< class T > inline T _max(T a, T b)
-{
-    return (!((a)<(b))?(a):(b));
-}
-template< class T > inline T _min(T a, T b)
-{
-    return (((a)<(b))?(a):(b));
-}
-template< class T > inline T _swap(T &a, T &b)
-{
-    a=a^b;
-    b=a^b;
-    a=a^b;
-}
 template< class T > inline T gcd(T a, T b)
 {
     return (b) == 0 ? (a) : gcd((b), ((a) % (b)));
@@ -114,63 +96,80 @@ struct debugger
 } dbg;
 ///****************** template ends here ****************
 int t,n,m;
-#define MAXN 1005
-int dp[MAXN][5];
-int par[MAXN];
-vector<int>edges[MAXN];
-int visit[1005];
-int tot;
-int call(int u, int isGuard)
+
+#define MAX 1005
+
+vector < int > edges[MAX];
+bool visited[MAX];
+int Left[MAX], Right[MAX];
+
+bool dfs(int u)
 {
-//    if(visit[u]==0)tot++;
-    visit[u]=1;
-    if (edges[u].size() == 0)return 1;
-    if (dp[u][isGuard] != -1)return dp[u][isGuard];
-    int sum = 0;
-    for (int i = 0; i < (int)edges[u].size(); i++)
+    if(visited[u]) return false;
+    visited[u] = true;
+    int len = edges[u].size(), i, v;
+    for(i=0; i<len; i++)
     {
-        int v = edges[u][i];
-        if (v != par[u])
+        v = edges[u][i];
+        if(Right[v]==-1)
         {
-            par[v] = u;
-            if (isGuard == 1)sum += call(v, 0);
-            else sum += max(call(v, 1), call(v, 0));
+            Right[v] = u, Left[u] = v;
+            return true;
         }
     }
-    return dp[u][isGuard] = sum + isGuard;
+    for(i=0; i<len; i++)
+    {
+        v = edges[u][i];
+        if(dfs(Right[v]))
+        {
+            Right[v] = u, Left[u] = v;
+            return true;
+        }
+    }
+    return false;
+}
+
+int match(int n)
+{
+    SET(Left);
+    SET(Right);
+    int i, ret = 0;
+    bool done;
+    do
+    {
+        done = true;
+        CLR(visited);
+        rep(i,n)if(Left[i]==-1 && dfs(i))done = false;
+    }while(!done);
+    rep(i,n) ret += (Left[i]!=-1);
+    return ret;
 }
 
 int main()
 {
 #ifdef mamun
-//    READ("in.txt");
+    READ("in.txt");
 //        WRITE("out.txt");
 #endif // mamun
+
     getI(t);
     rep(cs,t)
     {
         getII(n,m);
+//        CLR(visited);
         rep(i,n)edges[i].clear();
         rep(i,m)
         {
             int u, v;
             getII(u,v);
             edges[u].push_back(v);
-            edges[v].push_back(u);
+//            edges[v].push_back(u);
         }
-        SET(dp);
-        SET(par);
-        CLR(visit);
-        int ans=0;
-        rep(i,n)
-        {
-            if(!visit[i])
-            {
-                ans+= max(call(i, 1), call(i, 0));
-            }
-        }
-        printf("Case %d: %d\n",cs,ans);
+//		SET(par);
+//        SET(dp);
+//        int ans=0;
+//        ans = min(call(1, 1), call(1, 0));
+        printf("Case %d: %d\n",cs,n-match(n));
     }
     return 0;
 }
-

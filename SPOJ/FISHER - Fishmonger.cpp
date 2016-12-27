@@ -26,7 +26,7 @@
 using namespace std;
 
 const double EPS = 1e-9;
-const int INF = 0x7f7f7f7f;
+const int INF = 1e8;
 const double PI=acos(-1.0);
 
 #define    READ(f) 	         freopen(f, "r", stdin)
@@ -65,112 +65,74 @@ const double PI=acos(-1.0);
 #define    ll	 long long
 #define    ull 	 unsigned long long
 
-template< class T > inline T _abs(T n)
-{
-    return ((n) < 0 ? -(n) : (n));
-}
-template< class T > inline T _max(T a, T b)
-{
-    return (!((a)<(b))?(a):(b));
-}
-template< class T > inline T _min(T a, T b)
-{
-    return (((a)<(b))?(a):(b));
-}
-template< class T > inline T _swap(T &a, T &b)
-{
-    a=a^b;
-    b=a^b;
-    a=a^b;
-}
-template< class T > inline T gcd(T a, T b)
-{
-    return (b) == 0 ? (a) : gcd((b), ((a) % (b)));
-}
-template< class T > inline T lcm(T a, T b)
-{
-    return ((a) / gcd((a), (b)) * (b));
-}
-template <typename T> string NumberToString ( T Number )
-{
-    ostringstream ss;
-    ss << Number;
-    return ss.str();
-}
-
+template< class T > inline T gcd(T a, T b) { return (b) == 0 ? (a) : gcd((b), ((a) % (b))); }
+template< class T > inline T lcm(T a, T b) { return ((a) / gcd((a), (b)) * (b)); }
+template <typename T> string NumberToString ( T Number ) { ostringstream ss; ss << Number; return ss.str(); }
+typedef long long int L;
+inline int nxt(){int a;scanf("%d",&a);return a;}
+inline L NXT(){L a;scanf("%lld",&a);return a;}
 #ifdef mamun
-#define debug(args...) {cerr<<"*: "; dbg,args; cerr<<endl;}
+     #define debug(args...) {cerr<<"*: "; dbg,args; cerr<<endl;}
 #else
-#define debug(args...)  // Just strip off all debug tokens
+    #define debug(args...)  // Just strip off all debug tokens
 #endif
 
-struct debugger
-{
-    template<typename T> debugger& operator, (const T& v)
-    {
+struct debugger{
+    template<typename T> debugger& operator , (const T& v){
         cerr<<v<<" ";
         return *this;
     }
-} dbg;
+}dbg;
 ///****************** template ends here ****************
 int t,n,m;
-#define MAXN 1005
-int dp[MAXN][5];
-int par[MAXN];
-vector<int>edges[MAXN];
-int visit[1005];
-int tot;
-int call(int u, int isGuard)
+int tme[55][55],toll[55][55];
+int dp[55][1005];
+
+int call(int pos,int lft)
 {
-//    if(visit[u]==0)tot++;
-    visit[u]=1;
-    if (edges[u].size() == 0)return 1;
-    if (dp[u][isGuard] != -1)return dp[u][isGuard];
-    int sum = 0;
-    for (int i = 0; i < (int)edges[u].size(); i++)
+    if(lft<0)return INF;
+    if(pos==n-1)
     {
-        int v = edges[u][i];
-        if (v != par[u])
-        {
-            par[v] = u;
-            if (isGuard == 1)sum += call(v, 0);
-            else sum += max(call(v, 1), call(v, 0));
-        }
+        return 0;
     }
-    return dp[u][isGuard] = sum + isGuard;
+    int &ret=dp[pos][lft];
+    if(ret!=-1)return ret;
+    ret=INF;
+    repI(i,n)
+    {
+        if(i==pos)continue;
+        ret=min(ret,call(i,lft-tme[pos][i])+toll[pos][i]);
+    }
+    return ret;
 }
 
-int main()
-{
-#ifdef mamun
-//    READ("in.txt");
+int main() {
+    ///check for 0 or -1 if input not specified
+    #ifdef mamun
+        READ("in.txt");
 //        WRITE("out.txt");
-#endif // mamun
-    getI(t);
-    rep(cs,t)
+    #endif // mamun
+//    ios_base::sync_with_stdio(0);cin.tie(0);
+    while(getII(n,m)&&(n&&m))
     {
-        getII(n,m);
-        rep(i,n)edges[i].clear();
-        rep(i,m)
-        {
-            int u, v;
-            getII(u,v);
-            edges[u].push_back(v);
-            edges[v].push_back(u);
-        }
+        pii ans=MP(INF,INF);
+        repI(i,n)repI(j,n)getI(tme[i][j]);
+        repI(i,n)repI(j,n)getI(toll[i][j]);
         SET(dp);
-        SET(par);
-        CLR(visit);
-        int ans=0;
-        rep(i,n)
+        repI(i,m+1)
         {
-            if(!visit[i])
+            int ret=call(0,i);
+            if(ret<ans.ff)
             {
-                ans+= max(call(i, 1), call(i, 0));
+                ans.ff=ret;
+                ans.ss=i;
             }
         }
-        printf("Case %d: %d\n",cs,ans);
+        printf("%d %d\n",ans.ff,ans.ss);
+
     }
+
+
     return 0;
 }
 

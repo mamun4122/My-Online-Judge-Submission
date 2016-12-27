@@ -1,3 +1,4 @@
+
 #pragma comment(linker, "/stack:640000000")
 
 #include <algorithm>
@@ -65,112 +66,64 @@ const double PI=acos(-1.0);
 #define    ll	 long long
 #define    ull 	 unsigned long long
 
-template< class T > inline T _abs(T n)
-{
-    return ((n) < 0 ? -(n) : (n));
-}
-template< class T > inline T _max(T a, T b)
-{
-    return (!((a)<(b))?(a):(b));
-}
-template< class T > inline T _min(T a, T b)
-{
-    return (((a)<(b))?(a):(b));
-}
-template< class T > inline T _swap(T &a, T &b)
-{
-    a=a^b;
-    b=a^b;
-    a=a^b;
-}
-template< class T > inline T gcd(T a, T b)
-{
-    return (b) == 0 ? (a) : gcd((b), ((a) % (b)));
-}
-template< class T > inline T lcm(T a, T b)
-{
-    return ((a) / gcd((a), (b)) * (b));
-}
-template <typename T> string NumberToString ( T Number )
-{
-    ostringstream ss;
-    ss << Number;
-    return ss.str();
-}
+template< class T > inline T gcd(T a, T b) { return (b) == 0 ? (a) : gcd((b), ((a) % (b))); }
+template< class T > inline T lcm(T a, T b) { return ((a) / gcd((a), (b)) * (b)); }
+template <typename T> string NumberToString ( T Number ) { ostringstream ss; ss << Number; return ss.str(); }
 
 #ifdef mamun
-#define debug(args...) {cerr<<"*: "; dbg,args; cerr<<endl;}
+     #define debug(args...) {cerr<<"*: "; dbg,args; cerr<<endl;}
 #else
-#define debug(args...)  // Just strip off all debug tokens
+    #define debug(args...)  // Just strip off all debug tokens
 #endif
 
-struct debugger
-{
-    template<typename T> debugger& operator, (const T& v)
-    {
+struct debugger{
+    template<typename T> debugger& operator , (const T& v){
         cerr<<v<<" ";
         return *this;
     }
-} dbg;
+}dbg;
 ///****************** template ends here ****************
 int t,n,m;
-#define MAXN 1005
-int dp[MAXN][5];
-int par[MAXN];
-vector<int>edges[MAXN];
-int visit[1005];
-int tot;
-int call(int u, int isGuard)
+double y;
+double func(double x)
 {
-//    if(visit[u]==0)tot++;
-    visit[u]=1;
-    if (edges[u].size() == 0)return 1;
-    if (dp[u][isGuard] != -1)return dp[u][isGuard];
-    int sum = 0;
-    for (int i = 0; i < (int)edges[u].size(); i++)
-    {
-        int v = edges[u][i];
-        if (v != par[u])
-        {
-            par[v] = u;
-            if (isGuard == 1)sum += call(v, 0);
-            else sum += max(call(v, 1), call(v, 0));
-        }
-    }
-    return dp[u][isGuard] = sum + isGuard;
+    double sum=8.0*x*x*x*x+7*x*x*x+2*x*x+3*x+6-y;
+    return sum;
 }
 
-int main()
-{
-#ifdef mamun
-//    READ("in.txt");
+int main() {
+    ///check for 0 or -1 if input not specified
+    #ifdef mamun
+//        READ("in.txt");
 //        WRITE("out.txt");
-#endif // mamun
+    #endif // mamun
+//    ios_base::sync_with_stdio(0);cin.tie(0);
     getI(t);
     rep(cs,t)
     {
-        getII(n,m);
-        rep(i,n)edges[i].clear();
-        rep(i,m)
+        getF(y);
+        double low=0.0,high=100.00;
+        int flag=0,cnt=1000;
+        while(cnt)
         {
-            int u, v;
-            getII(u,v);
-            edges[u].push_back(v);
-            edges[v].push_back(u);
-        }
-        SET(dp);
-        SET(par);
-        CLR(visit);
-        int ans=0;
-        rep(i,n)
-        {
-            if(!visit[i])
+            cnt--;
+//            debug(low,high,func(low),func(high))
+            if(func(low)*func(high)>EPS)
             {
-                ans+= max(call(i, 1), call(i, 0));
+                flag=1;
+                break;
             }
+            double mid=(low+high)/2.0;
+            double val=func(mid);
+            if(val<EPS)low=mid;
+            else high=mid;
         }
-        printf("Case %d: %d\n",cs,ans);
+//        debug(low,high)
+        double ans=(low+high)/2;
+        if(flag)puts("No solution!");
+        else printf("%.4lf\n",ans);
     }
+
+
     return 0;
 }
-
