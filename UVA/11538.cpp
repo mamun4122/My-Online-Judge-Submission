@@ -1,28 +1,5 @@
 #pragma comment(linker, "/stack:640000000")
-
-#include <algorithm>
-#include <bitset>
-#include <cassert>
-#include <cctype>
-#include <climits>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <fstream>
-#include <iostream>
-#include <iomanip>
-#include <iterator>
-#include <list>
-#include <map>
-#include <numeric>
-#include <queue>
-#include <set>
-#include <sstream>
-#include <stack>
-#include <string>
-#include <utility>
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
 
 const double EPS = 1e-9;
@@ -64,6 +41,11 @@ const double PI=acos(-1.0);
 #define    ss 	 second
 #define    ll	 long long
 #define    ull 	 unsigned long long
+#define    POPCOUNT           __builtin_popcount
+#define    POPCOUNTLL         __builtin_popcountll
+#define    RIGHTMOST          __builtin_ctzll
+#define    LEFTMOST(x)        (63-__builtin_clzll((x)))
+#define    UNIQUE(V) (V).erase(unique((V).begin(),(V).end()),(V).end())
 
 template< class T > inline T gcd(T a, T b) { return (b) == 0 ? (a) : gcd((b), ((a) % (b))); }
 template< class T > inline T lcm(T a, T b) { return ((a) / gcd((a), (b)) * (b)); }
@@ -83,68 +65,8 @@ struct debugger{
 }dbg;
 ///****************** template ends here ****************
 int t,n,m;
-#define mx 100001
-int arr[mx];
-struct info
-{
-//    int val;
-//    int id;
-    int pref;
-    int pval,sval;
-    int suf;
-    int ans;
-}tree[mx*4];
-info call(info a,info b)
-{
-    info tmp;
-    ///merge two info
-    tmp.ans=max(a.ans,b.ans);
-    if(a.sval==b.pval)tmp.ans=max(tmp.ans,a.suf+b.pref);
-    tmp.pref=a.pref;
-    tmp.suf=b.suf;
-    tmp.pval=a.pval;
-    tmp.sval=b.sval;
-    if(a.pval==b.pval)tmp.pref+=b.pref;
-    if(b.sval==a.sval)tmp.suf+=a.suf;
-    tmp.ans=max(tmp.ans,tmp.pref);
-    tmp.ans=max(tmp.ans,tmp.suf);
-    return tmp;
-}
-void init(int node,int b,int e)
-{
-	if(b==e)
-	{
-	    ///do something
-	    tree[node].pval=tree[node].sval=arr[b];
-	    tree[node].ans=tree[node].pref=tree[node].suf=1;
-		return;
-	}
-	int Left=node*2;
-	int Right=node*2+1;
-	int mid=(b+e)/2;
-	init(Left,b,mid);
-	init(Right,mid+1,e);
-	tree[node]=call(tree[Left],tree[Right]);
-}
-//info zero;
-info query(int node,int b,int e,int i,int j)
-{
-//	if (i > e || j < b)return 0;
-	if(b>=i && e<=j)
-    {
-        ///do something
-        return tree[node];
-    }
-	int Left=node<<1;
-	int Right=(node<<1)+1;
-	int mid=(b+e)>>1;
-	if(j<=mid)return query(Left,b,mid,i,j);
-	else if(i>mid)return query(Right,mid+1,e,i,j);
-    info p1 = query(Left,b,mid,i,j);
-    info p2 = query(Right,mid+1,e,i,j);
-    return  call(p1,p2);
 
-}
+/// http://www.algorithmist.com/index.php/UVa_11538
 
 int main() {
     ///check for 0 or -1 if input not specified
@@ -152,20 +74,31 @@ int main() {
 //        READ("in.txt");
 //        WRITE("out.txt");
     #endif // mamun
-//    ios_base::sync_with_stdio(0);cin.tie(0);
-    while(~getI(n)&&n)
+    ios_base::sync_with_stdio(0);cin.tie(0);
+    ull row, col;
+    while(cin>>row>>col)
     {
-        getI(m);
-        rep(i,n)getI(arr[i]);
-        init(1,1,n);
-        rep(i,m)
-        {
-            int a,b;
-            getII(a,b);
-            printf("%d\n",query(1,1,n,a,b).ans);
-        }
-    }
+        if(!row || !col)break;
+        ull ans = 0;
+        ans += row*col*(col-1);
+        ans += col*row*(row-1);
 
+        ull mini = min(row, col);
+        ull maxi = max(row, col);
+        /// diagonal inc from 1 to min then min to max remain same then dec
+        /// 0 to minimum - 1
+        ull res = mini * (mini-1) * (mini-2);
+        res /= 3;
+        res *= 2; /// this two is multiplied for opposite side
+        /// mini to maxi same
+        res += mini*(mini-1)*(maxi-mini+1);
+        res *= 2; /// this is for two diagonal
+
+        ans += res;
+
+        cout << ans << endl;
+
+    }
 
     return 0;
 }

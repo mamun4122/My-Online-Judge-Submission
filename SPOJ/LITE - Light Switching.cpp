@@ -87,27 +87,15 @@ int t,n,m;
 int arr[mx];
 struct info
 {
-//    int val;
-//    int id;
-    int pref;
-    int pval,sval;
-    int suf;
-    int ans;
+    int sum;
+    int prop;
 }tree[mx*4];
 info call(info a,info b)
 {
     info tmp;
     ///merge two info
-    tmp.ans=max(a.ans,b.ans);
-    if(a.sval==b.pval)tmp.ans=max(tmp.ans,a.suf+b.pref);
-    tmp.pref=a.pref;
-    tmp.suf=b.suf;
-    tmp.pval=a.pval;
-    tmp.sval=b.sval;
-    if(a.pval==b.pval)tmp.pref+=b.pref;
-    if(b.sval==a.sval)tmp.suf+=a.suf;
-    tmp.ans=max(tmp.ans,tmp.pref);
-    tmp.ans=max(tmp.ans,tmp.suf);
+    tmp.sum=a.sum+b.sum;
+    tmp.prop=0;
     return tmp;
 }
 void init(int node,int b,int e)
@@ -115,8 +103,7 @@ void init(int node,int b,int e)
 	if(b==e)
 	{
 	    ///do something
-	    tree[node].pval=tree[node].sval=arr[b];
-	    tree[node].ans=tree[node].pref=tree[node].suf=1;
+	    tree[node].sum=tree[node].prop=0;
 		return;
 	}
 	int Left=node*2;
@@ -126,25 +113,63 @@ void init(int node,int b,int e)
 	init(Right,mid+1,e);
 	tree[node]=call(tree[Left],tree[Right]);
 }
-//info zero;
-info query(int node,int b,int e,int i,int j)
+void propagate(int node,int b,int e)
 {
-//	if (i > e || j < b)return 0;
-	if(b>=i && e<=j)
+    if(b==e)
     {
-        ///do something
-        return tree[node];
+        tree[node].prop=0;
+        return;
     }
 	int Left=node<<1;
 	int Right=(node<<1)+1;
 	int mid=(b+e)>>1;
-	if(j<=mid)return query(Left,b,mid,i,j);
-	else if(i>mid)return query(Right,mid+1,e,i,j);
-    info p1 = query(Left,b,mid,i,j);
-    info p2 = query(Right,mid+1,e,i,j);
-    return  call(p1,p2);
+	///update propagation
+	tree[Left].prop^=tree[node].prop;
+	tree[Right].prop^=tree[node].prop;
+    tree[node].prop=0;
+    ///update tree[left]
+    tree[Left].sum=mid-b+1-tree[Left].sum;
+    ///update tree[right]
+    tree[Right].sum=e-mid-tree[Right].sum;
 
 }
+int query(int node,int b,int e,int i,int j)
+{
+	if (i > e || j < b)return 0;
+	if(tree[node].prop)propagate(node,b,e);
+	if(b>=i && e<=j)
+    {
+        ///do something
+        return tree[node].sum;
+    }
+	int Left=node<<1;
+	int Right=(node<<1)+1;
+	int mid=(b+e)>>1;
+    int p1 = query(Left,b,mid,i,j);
+    int p2 = query(Right,mid+1,e,i,j);
+    return  p1+p2;
+
+}
+
+void update(int node,int b,int e,int i,int j)
+{
+	if (i > e || j < b)	return;
+	if (b >= i && e <= j)
+    {
+        ///do something
+        tree[node].prop^=1;
+        tree[node].sum=e-b+1-tree[node].sum;
+		return;
+	}
+	if(tree[node].prop)propagate(node,b,e);
+	int Left=node*2;
+	int Right=(node*2)+1;
+	int mid=(b+e)/2;
+	update(Left,b,mid,i,j);
+	update(Right,mid+1,e,i,j);
+	tree[node]=call(tree[Left],tree[Right]);
+}
+
 
 int main() {
     ///check for 0 or -1 if input not specified
@@ -153,19 +178,17 @@ int main() {
 //        WRITE("out.txt");
     #endif // mamun
 //    ios_base::sync_with_stdio(0);cin.tie(0);
-    while(~getI(n)&&n)
+    while(~getII(n,m))
     {
-        getI(m);
-        rep(i,n)getI(arr[i]);
+        n++;
         init(1,1,n);
-        rep(i,m)
-        {
-            int a,b;
-            getII(a,b);
-            printf("%d\n",query(1,1,n,a,b).ans);
+        int type,a,b;
+        rep(i,m){
+        getIII(type,a,b);
+        if(type)printf("%d\n",query(1,1,n,++a,++b));
+        else update(1,1,n,++a,++b);
         }
     }
-
 
     return 0;
 }

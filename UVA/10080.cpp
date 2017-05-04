@@ -83,90 +83,95 @@ struct debugger{
 }dbg;
 ///****************** template ends here ****************
 int t,n,m;
-#define mx 100001
-int arr[mx];
-struct info
-{
-//    int val;
-//    int id;
-    int pref;
-    int pval,sval;
-    int suf;
-    int ans;
-}tree[mx*4];
-info call(info a,info b)
-{
-    info tmp;
-    ///merge two info
-    tmp.ans=max(a.ans,b.ans);
-    if(a.sval==b.pval)tmp.ans=max(tmp.ans,a.suf+b.pref);
-    tmp.pref=a.pref;
-    tmp.suf=b.suf;
-    tmp.pval=a.pval;
-    tmp.sval=b.sval;
-    if(a.pval==b.pval)tmp.pref+=b.pref;
-    if(b.sval==a.sval)tmp.suf+=a.suf;
-    tmp.ans=max(tmp.ans,tmp.pref);
-    tmp.ans=max(tmp.ans,tmp.suf);
-    return tmp;
-}
-void init(int node,int b,int e)
-{
-	if(b==e)
-	{
-	    ///do something
-	    tree[node].pval=tree[node].sval=arr[b];
-	    tree[node].ans=tree[node].pref=tree[node].suf=1;
-		return;
-	}
-	int Left=node*2;
-	int Right=node*2+1;
-	int mid=(b+e)/2;
-	init(Left,b,mid);
-	init(Right,mid+1,e);
-	tree[node]=call(tree[Left],tree[Right]);
-}
-//info zero;
-info query(int node,int b,int e,int i,int j)
-{
-//	if (i > e || j < b)return 0;
-	if(b>=i && e<=j)
-    {
-        ///do something
-        return tree[node];
-    }
-	int Left=node<<1;
-	int Right=(node<<1)+1;
-	int mid=(b+e)>>1;
-	if(j<=mid)return query(Left,b,mid,i,j);
-	else if(i>mid)return query(Right,mid+1,e,i,j);
-    info p1 = query(Left,b,mid,i,j);
-    info p2 = query(Right,mid+1,e,i,j);
-    return  call(p1,p2);
+#define MAX 205
 
+vector < int > edges[MAX];
+bool visited[MAX];
+int Left[MAX], Right[MAX];
+
+bool dfs(int u) {
+    if(visited[u]) return false;
+    visited[u] = true;
+    int len = edges[u].size(), i, v;
+    for(i=0; i<len; i++) {
+        v = edges[u][i];
+        if(Right[v]==-1) {
+            Right[v] = u, Left[u] = v;
+            return true;
+        }
+    }
+    for(i=0; i<len; i++) {
+        v = edges[u][i];
+        if(dfs(Right[v])) {
+            Right[v] = u, Left[u] = v;
+            return true;
+        }
+    }
+    return false;
+}
+
+int match(int n)
+{
+    SET(Left);
+    SET(Right);
+    int i, ret = 0;
+    bool done;
+    do
+    {
+        done = true;
+        CLR(visited);
+        rep(i,n)if(Left[i]==-1 && dfs(i))done = false;
+    }while(!done);
+    rep(i,n) ret += (Left[i]!=-1);
+    return ret;
+}
+typedef pair<double,double> pdd;
+pdd gopher[MAX],hole[MAX];
+int tme,speed;
+double sqDist(pdd a,pdd b)
+{
+    return (a.ff-b.ff)*(a.ff-b.ff)+(a.ss-b.ss)*(a.ss-b.ss);
 }
 
 int main() {
     ///check for 0 or -1 if input not specified
     #ifdef mamun
-//        READ("in.txt");
+        READ("in.txt");
 //        WRITE("out.txt");
     #endif // mamun
 //    ios_base::sync_with_stdio(0);cin.tie(0);
-    while(~getI(n)&&n)
+    while(~getII(n,m))
     {
-        getI(m);
-        rep(i,n)getI(arr[i]);
-        init(1,1,n);
+        getII(tme,speed);
+        rep(i,n)
+        {
+            getF(gopher[i].ff);
+            getF(gopher[i].ss);
+        }
         rep(i,m)
         {
-            int a,b;
-            getII(a,b);
-            printf("%d\n",query(1,1,n,a,b).ans);
+            getF(hole[i].ff);
+            getF(hole[i].ss);
         }
-    }
+        double dist=tme*speed;
+        dist*=dist;
+        rep(i,n)
+        {
+            edges[i].clear();
+            rep(j,m)
+            {
+                double sqdist=sqDist(gopher[i],hole[j]);
+                if(sqdist<=dist)
+                {
+                    edges[i].PB(n+j);
+                }
+            }
+        }
+        printf("%d\n",n-match(n));
 
+    }
 
     return 0;
 }
+
 

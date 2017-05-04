@@ -29,22 +29,22 @@ const double EPS = 1e-9;
 const int INF = 0x7f7f7f7f;
 const double PI=acos(-1.0);
 
-#define    READ(f) 	         freopen(f, "r", stdin)
-#define    WRITE(f)   	     freopen(f, "w", stdout)
-#define    MP(x, y) 	     make_pair(x, y)
+#define    READ(f)           freopen(f, "r", stdin)
+#define    WRITE(f)          freopen(f, "w", stdout)
+#define    MP(x, y)          make_pair(x, y)
 #define    PB(x)             push_back(x)
 #define    rep(i,n)          for(int i = 1 ; i<=(n) ; i++)
 #define    repI(i,n)         for(int i = 0 ; i<(n) ; i++)
-#define    FOR(i,L,R) 	     for (int i = L; i <= R; i++)
-#define    ROF(i,L,R) 	     for (int i = L; i >= R; i--)
+#define    FOR(i,L,R)        for (int i = L; i <= R; i++)
+#define    ROF(i,L,R)        for (int i = L; i >= R; i--)
 #define    FOREACH(i,t)      for (typeof(t.begin()) i=t.begin(); i!=t.end(); i++)
-#define    ALL(p) 	         p.begin(),p.end()
-#define    ALLR(p) 	         p.rbegin(),p.rend()
-#define    SET(p) 	         memset(p, -1, sizeof(p))
+#define    ALL(p)            p.begin(),p.end()
+#define    ALLR(p)           p.rbegin(),p.rend()
+#define    SET(p)            memset(p, -1, sizeof(p))
 #define    CLR(p)            memset(p, 0, sizeof(p))
 #define    MEM(p, v)         memset(p, v, sizeof(p))
-#define    getI(a) 	         scanf("%d", &a)
-#define    getII(a,b) 	     scanf("%d%d", &a, &b)
+#define    getI(a)           scanf("%d", &a)
+#define    getII(a,b)        scanf("%d%d", &a, &b)
 #define    getIII(a,b,c)     scanf("%d%d%d", &a, &b, &c)
 #define    getL(a)           scanf("%lld",&a)
 #define    getLL(a,b)        scanf("%lld%lld",&a,&b)
@@ -57,13 +57,13 @@ const double PI=acos(-1.0);
 #define    bitOn(a,k)        (a|(1<<(k)))
 #define    bitFlip(a,k)      (a^(1<<(k)))
 #define    iseq(a,b)         (fabs(a-b)<EPS)
-#define    vi 	 vector < int >
-#define    vii 	 vector < vector < int > >
-#define    pii 	 pair< int, int >
-#define    ff 	 first
-#define    ss 	 second
-#define    ll	 long long
-#define    ull 	 unsigned long long
+#define    vi    vector < int >
+#define    vii   vector < vector < int > >
+#define    pii   pair< int, int >
+#define    ff    first
+#define    ss    second
+#define    ll    long long
+#define    ull   unsigned long long
 
 template< class T > inline T _abs(T n)
 {
@@ -175,18 +175,11 @@ int main()
 {
     ///check for 0 or -1 if input not specified
 #ifdef mamun
-    READ("in.txt");
+ //   READ("in.txt");
 //        WRITE("out.txt");
 #endif // mamun
     getI(t);
     CLR(mark);
-//    ull mod=1;
-//    rep(i,64)
-//    {
-//        mod*=2;
-//        debug(mod)
-//    }
-//    debug(mod)
     rep(cs,t)
     {
         ci=cs;
@@ -218,8 +211,7 @@ int main()
         }
 //        debug(n,m)
 //        repI(i,n)debug(masks[i])
-
-        printf("Case %d: %llu\n",cs,call(0,0,masks[0])%LONG_LONG_MAX);
+        printf("Case %d: %llu\n",cs,call(0,0,masks[0]));
 
     }
 
@@ -228,4 +220,3 @@ int main()
 
     return 0;
 }
-

@@ -83,68 +83,7 @@ struct debugger{
 }dbg;
 ///****************** template ends here ****************
 int t,n,m;
-#define mx 100001
-int arr[mx];
-struct info
-{
-//    int val;
-//    int id;
-    int pref;
-    int pval,sval;
-    int suf;
-    int ans;
-}tree[mx*4];
-info call(info a,info b)
-{
-    info tmp;
-    ///merge two info
-    tmp.ans=max(a.ans,b.ans);
-    if(a.sval==b.pval)tmp.ans=max(tmp.ans,a.suf+b.pref);
-    tmp.pref=a.pref;
-    tmp.suf=b.suf;
-    tmp.pval=a.pval;
-    tmp.sval=b.sval;
-    if(a.pval==b.pval)tmp.pref+=b.pref;
-    if(b.sval==a.sval)tmp.suf+=a.suf;
-    tmp.ans=max(tmp.ans,tmp.pref);
-    tmp.ans=max(tmp.ans,tmp.suf);
-    return tmp;
-}
-void init(int node,int b,int e)
-{
-	if(b==e)
-	{
-	    ///do something
-	    tree[node].pval=tree[node].sval=arr[b];
-	    tree[node].ans=tree[node].pref=tree[node].suf=1;
-		return;
-	}
-	int Left=node*2;
-	int Right=node*2+1;
-	int mid=(b+e)/2;
-	init(Left,b,mid);
-	init(Right,mid+1,e);
-	tree[node]=call(tree[Left],tree[Right]);
-}
-//info zero;
-info query(int node,int b,int e,int i,int j)
-{
-//	if (i > e || j < b)return 0;
-	if(b>=i && e<=j)
-    {
-        ///do something
-        return tree[node];
-    }
-	int Left=node<<1;
-	int Right=(node<<1)+1;
-	int mid=(b+e)>>1;
-	if(j<=mid)return query(Left,b,mid,i,j);
-	else if(i>mid)return query(Right,mid+1,e,i,j);
-    info p1 = query(Left,b,mid,i,j);
-    info p2 = query(Right,mid+1,e,i,j);
-    return  call(p1,p2);
-
-}
+vector<pii> v;
 
 int main() {
     ///check for 0 or -1 if input not specified
@@ -153,17 +92,26 @@ int main() {
 //        WRITE("out.txt");
     #endif // mamun
 //    ios_base::sync_with_stdio(0);cin.tie(0);
-    while(~getI(n)&&n)
+    getI(t);
+    rep(cs,t)
     {
-        getI(m);
-        rep(i,n)getI(arr[i]);
-        init(1,1,n);
+        v.clear();
+        getII(n,m);
+        rep(i,n)
+        {
+            int x;
+            getI(x);
+            v.push_back(MP(x,2));
+        }
         rep(i,m)
         {
-            int a,b;
-            getII(a,b);
-            printf("%d\n",query(1,1,n,a,b).ans);
+            int x;
+            getI(x);
+            v.push_back(MP(x,1));
         }
+        sort(ALL(v));
+        if(v[(int)v.size()-1].ss==2)puts("Godzilla");
+        else puts("MechaGodzilla");
     }
 
 
